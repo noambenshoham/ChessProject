@@ -1,4 +1,4 @@
-.chess {
+.chessBoard {
     margin-left: 150px;
     border: 10px solid black;
 
@@ -7,10 +7,21 @@
     width: 80px;
     height: 80px;
     background-color: gray;
-    /* display: inline; */
+    text-align: center;
 }
 .white {
     width: 80px;
     height: 80px;
     background-color: white;
+    font-size: 40px;
+    text-align: center;
+    
+}
+
+.upSide {
+    transform: scaleY(-1);
+}
+
+.clicked {
+    background-color: rgb(20, 198, 20);
 }
