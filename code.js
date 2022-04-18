@@ -1,15 +1,13 @@
 function Chess() {
-    const BOARD_SIZE = 8;
     const boardEl = document.createElement("table");
     boardEl.classList.add("chessBoard");
 
+    
     document.body.appendChild(boardEl);
     for (let x = 0; x < BOARD_SIZE; x++) {
         let row = boardEl.insertRow();
         for (let y = 0; y < BOARD_SIZE; y++) {
             let cell = row.insertCell();
-            cell.innerHTML = addImg(x, y);
-            cell.addEventListener('click', () => cell.classList.add("clicked"));
             if ((x + y) % 2 === 0) {
                 cell.classList.add("white");
             } else {
@@ -18,13 +16,66 @@ function Chess() {
             if (x === 0 || x === 1) {
                 cell.classList.add("upSide")
             }
+            cell.addEventListener('click', onCellClick);
         }
+
+    }
+    pieces = getInitialBoard();
+
+    for (let piece of pieces) {
+        let cell = boardEl.rows[piece.row].cells[piece.col];
+        cell.innerHTML = piece.type;
     }
 }
 
 window.addEventListener('load', Chess);
 
+class Pieces {
+    constructor(row, col, type, player) {
+        this.row = row;
+        this.col = col;
+        this.type = type;
+        this.player = player;
+    }
+}
 
+function getInitialBoard() {
+    let result = [];
+    result.push(new Pieces(0, 0, blackRook, BLACK_PLAYER))
+    result.push(new Pieces(0, 1, blackKnight, BLACK_PLAYER))
+    result.push(new Pieces(0, 2, blackBishop, BLACK_PLAYER))
+    result.push(new Pieces(0, 3, blackQueen, BLACK_PLAYER))
+    result.push(new Pieces(0, 4, blackKing, BLACK_PLAYER))
+    result.push(new Pieces(0, 5, blackBishop, BLACK_PLAYER))
+    result.push(new Pieces(0, 6, blackKnight, BLACK_PLAYER))
+    result.push(new Pieces(0, 7, blackRook, BLACK_PLAYER))
+    
+    result.push(new Pieces(7, 0, whiteRook, WHITE_PLAYER))
+    result.push(new Pieces(7, 1, whiteKnight, WHITE_PLAYER))
+    result.push(new Pieces(7, 2, whiteBishop, WHITE_PLAYER))
+    result.push(new Pieces(7, 3, whiteQueen, WHITE_PLAYER))
+    result.push(new Pieces(7, 4, whiteKing, WHITE_PLAYER))
+    result.push(new Pieces(7, 5, whiteBishop, WHITE_PLAYER))
+    result.push(new Pieces(7, 6, whiteKnight, WHITE_PLAYER))
+    result.push(new Pieces(7, 7, whiteRook, WHITE_PLAYER))
+
+    for (let i = 0; i < BOARD_SIZE; i++) {  
+        result.push(new Pieces(1, i, blackPawn))
+        result.push(new Pieces(6, i, whitePawn))
+
+    }
+  return result;
+  }
+  
+
+function onCellClick(event) {
+    console.log("hey");
+    if (selectedCell !== undefined) {
+      selectedCell.classList.remove('selected');
+    }
+    selectedCell = event.currentTarget;
+    selectedCell.classList.add('selected');
+  }
 
 function urlToElement(url) {
     return "<img src='" + url + "'>"
@@ -43,32 +94,8 @@ let whiteQueen = urlToElement("https://upload.wikimedia.org/wikipedia/commons/th
 let whiteKing = urlToElement("https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Chess_klt45.svg/68px-Chess_klt45.svg.png");
 let whitePawn = urlToElement("https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Chess_plt45.svg/68px-Chess_plt45.svg.png");
 
-function addImg(a, b) {
-    if (a === 1) {
-        return blackPawn
-    } else if ((a === 0 && b === 0) || (a === 0 && b === 7)) {
-        return blackRook;
-    } else if ((a === 0 && b === 1) || (a === 0 && b === 6)) {
-        return blackKnight;
-    } else if ((a === 0 && b === 2) || (a === 0 && b === 5)) {
-        return blackBishop;
-    } else if (a === 0 && b === 3) {
-        return blackQueen;
-    } else if (a === 0 && b === 4) {
-        return blackKing;
-    }
-    if (a === 6) {
-        return whitePawn;
-    } else if ((a === 7 && b === 0) || (a === 7 && b === 7)) {
-        return whiteRook;
-    } else if ((a === 7 && b === 1) || (a === 7 && b === 6)) {
-        return whiteKnight;
-    } else if ((a === 7 && b === 2) || (a === 7 && b === 5)) {
-        return whiteBishop;
-    } else if (a === 7 && b === 3) {
-        return whiteQueen;
-    } else if (a === 7 && b === 4) {
-        return whiteKing;
-    }
-    else return null
-}
+let selectedCell;
+let pieces = [];
+let BLACK_PLAYER;
+let WHITE_PLAYER;
+const BOARD_SIZE = 8;
