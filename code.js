@@ -1,7 +1,5 @@
 function createChessBoard() {
     boardEl.classList.add("chessBoard");
-
-
     document.body.appendChild(boardEl);
     for (let row = 0; row < BOARD_SIZE; row++) {
         let rowElement = boardEl.insertRow();
@@ -19,15 +17,52 @@ function createChessBoard() {
         }
 
     }
-    pieces = getInitialPiecies();
+    boardData = new BoardData(getInitialPiecies());
 
-    for (let piece of pieces) {
+    for (let piece of boardData.pieces) {
         let cell = boardEl.rows[piece.row].cells[piece.col];
         cell.appendChild(piece.img.cloneNode());
     }
 }
 
 window.addEventListener('load', createChessBoard);
+
+
+function onCellClick(event, row, col) {
+    for (let i = 0; i < BOARD_SIZE; i++) { // clear all
+        for (let j = 0; j < BOARD_SIZE; j++) {
+          boardEl.rows[i].cells[j].classList.remove('possible-move');
+        }
+    }
+    const piece = boardData.getPiece(row, col);
+    if (!(piece === undefined)) {
+        let possibleMoves = piece.getPossibleMoves();
+          for (let possibleMove of possibleMoves)
+          boardEl.rows[possibleMove[0]].cells[possibleMove[1]].classList.add('possible-move');
+    }
+    
+    if (selectedCell !== undefined) {
+      selectedCell.classList.remove('selected');
+    }
+    selectedCell = event.currentTarget;
+    selectedCell.classList.add('selected');
+    
+  }
+
+
+class BoardData {
+    constructor(pieces) {
+        this.pieces = pieces;
+    }
+    getPiece(row, col) {
+        for (const piece of this.pieces) {
+            if (piece.row === row && piece.col === col) {
+                return piece
+            }
+        }
+    }
+
+}
 
 
 class Pieces {
@@ -157,46 +192,6 @@ function getInitialPiecies() {
   return result;
   }
 
-
-function onCellClick(event, row, col) {
-    for (let i = 0; i < BOARD_SIZE; i++) { // clear all
-        for (let j = 0; j < BOARD_SIZE; j++) {
-          boardEl.rows[i].cells[j].classList.remove('possible-move');
-        }
-    }
-    for (let piece of pieces) {
-        if (piece.row === row && piece.col === col) {
-          let possibleMoves = piece.getPossibleMoves();
-          for (let possibleMove of possibleMoves)
-          boardEl.rows[possibleMove[0]].cells[possibleMove[1]].classList.add('possible-move');
-        }
-      }
-    
-    console.log(row, col);
-    if (selectedCell !== undefined) {
-      selectedCell.classList.remove('selected');
-    }
-    selectedCell = event.currentTarget;
-    selectedCell.classList.add('selected');
-    
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 let blackRookImg = imgEl("https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Chess_rdt45.svg/68px-Chess_rdt45.svg.png");
 let blackKnightImg = imgEl("https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Chess_ndt45.svg/68px-Chess_ndt45.svg.png");
 let blackBishopImg = imgEl("https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Chess_bdt45.svg/68px-Chess_bdt45.svg.png");
@@ -218,5 +213,6 @@ function imgEl(url) {
 
 const boardEl = document.createElement("table");
 let selectedCell;
-let pieces = [];
+let boardData;
+// let pieces = [];
 const BOARD_SIZE = 8;
