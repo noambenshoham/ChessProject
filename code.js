@@ -1,5 +1,4 @@
 function createChessBoard() {
-    const boardEl = document.createElement("table");
     boardEl.classList.add("chessBoard");
 
 
@@ -20,7 +19,7 @@ function createChessBoard() {
         }
 
     }
-    pieces = getInitialPicies();
+    pieces = getInitialPiecies();
 
     for (let piece of pieces) {
         let cell = boardEl.rows[piece.row].cells[piece.col];
@@ -39,43 +38,164 @@ class Pieces {
         this.player = player;
         this.img = img;
     }
-}
-function getInitialPicies() {
-    let result = [];
-    result.push(new Pieces(0, 0, 'rook', BLACK_PLAYER, blackRookImg))
-    result.push(new Pieces(0, 1, 'knight', BLACK_PLAYER, blackKnightImg))
-    result.push(new Pieces(0, 2, 'bishop', BLACK_PLAYER, blackBishopImg))
-    result.push(new Pieces(0, 3, 'queen', BLACK_PLAYER, blackQueenImg))
-    result.push(new Pieces(0, 4, 'king', BLACK_PLAYER, blackKingImg))
-    result.push(new Pieces(0, 5, 'bishop', BLACK_PLAYER, blackBishopImg))
-    result.push(new Pieces(0, 6, 'knight', BLACK_PLAYER, blackKnightImg))
-    result.push(new Pieces(0, 7, 'rook', BLACK_PLAYER, blackRookImg))
+    getPossibleMoves() {
+        let relativeMoves;
+        if (this.type === 'rook') {
+          relativeMoves = this.getRookRelativeMoves();
+        } else if (this.type === 'knight') {
+            relativeMoves = this.getKnightRelativeMoves();
+        } else if (this.type === 'bishop') {
+            relativeMoves = this.getBishopRelativeMoves();
+        } else if (this.type === 'queen') {
+            relativeMoves = this.getQueenRelativeMoves();
+        } else if (this.type === 'king') {
+            relativeMoves = this.getKingRelativeMoves();
+        } else if (this.type === 'pawn') {
+            relativeMoves = this.getPawnRelativeMoves();
+        }
+        let absoluteMoves = [];
+        for (let relativeMove of relativeMoves) {
+          const absoluteRow = this.row + relativeMove[0];
+          const absoluteCol = this.col + relativeMove[1];
+          absoluteMoves.push([absoluteRow, absoluteCol]);
+        }
+        let filteredMoves = [];
+        for (let absoluteMove of absoluteMoves) {
+          const absoluteRow = absoluteMove[0];
+          const absoluteCol = absoluteMove[1];
+          if (absoluteRow >= 0 && absoluteRow <= 7 && absoluteCol >= 0 && absoluteCol <= 7) {
+            filteredMoves.push(absoluteMove);
+          }
+        }
+        return filteredMoves;
+    }
+    getRookRelativeMoves() {
+        let result = [];
+        for (let i = 1; i < BOARD_SIZE; i++) {
+          result.push([i, 0]);
+          result.push([-i, 0]);
+          result.push([0, i]);
+          result.push([0, -i]);
+        }
+        return result;
+    }
+    getKnightRelativeMoves() {
+        let result = [[2, 1], [2, -1], [-2, 1], [-2, -1], [1, 2], [1, -2], [-1, 2], [-1, -2]]
+        return result;
+    }
+    getBishopRelativeMoves() {
+        let result = []
+        for (let i = 1; i < BOARD_SIZE; i++) {
+            result.push([i, i])
+            result.push([i, -i])
+            result.push([-i, i])
+            result.push([-i, -i])
+            
+        }
+        return result;
+    }
+    getQueenRelativeMoves() {
+        let result = [];
+        for (let i = 1; i < BOARD_SIZE; i++) {
+            result.push([i, 0]);
+            result.push([-i, 0]);
+            result.push([0, i]);
+            result.push([0, -i]);
+            result.push([i, i])
+            result.push([i, -i])
+            result.push([-i, i])
+            result.push([-i, -i])
+          }
+        return result;
+    }
+    getKingRelativeMoves() {
+        let result = [];
+        result.push([1, 0]);
+        result.push([-1, 0]);
+        result.push([0, 1]);
+        result.push([0, -1]);
+        result.push([1, 1])
+        result.push([1, -1])
+        result.push([-1, 1])
+        result.push([-1, -1])
+        return result;
+    }
+    getPawnRelativeMoves() {
+        if (this.player === 'black_player') {
+            return [[1, 0]]
+        } else {
+        return [[-1, 0]]
+        }
+    }
 
-    result.push(new Pieces(7, 0, 'rook', WHITE_PLAYER, whiteRookImg))
-    result.push(new Pieces(7, 1, 'knight', WHITE_PLAYER, whiteKnightImg))
-    result.push(new Pieces(7, 2, 'bishop', WHITE_PLAYER, whiteBishopImg))
-    result.push(new Pieces(7, 3, 'queen', WHITE_PLAYER, whiteQueenImg))
-    result.push(new Pieces(7, 4, 'king', WHITE_PLAYER, whiteKingImg))
-    result.push(new Pieces(7, 5, 'bishop', WHITE_PLAYER, whiteBishopImg))
-    result.push(new Pieces(7, 6, 'knight', WHITE_PLAYER, whiteKnightImg))
-    result.push(new Pieces(7, 7, 'rook', WHITE_PLAYER, whiteRookImg))
+
+}
+function getInitialPiecies() {
+    let result = [];
+    result.push(new Pieces(0, 0, 'rook', 'black_player', blackRookImg))
+    result.push(new Pieces(0, 1, 'knight', 'black_player', blackKnightImg))
+    result.push(new Pieces(0, 2, 'bishop', 'black_player', blackBishopImg))
+    result.push(new Pieces(0, 3, 'queen', 'black_player', blackQueenImg))
+    result.push(new Pieces(0, 4, 'king', 'black_player', blackKingImg))
+    result.push(new Pieces(0, 5, 'bishop', 'black_player', blackBishopImg))
+    result.push(new Pieces(0, 6, 'knight', 'black_player', blackKnightImg))
+    result.push(new Pieces(0, 7, 'rook', 'black_player', blackRookImg))
+
+    result.push(new Pieces(7, 0, 'rook', 'white_player', whiteRookImg))
+    result.push(new Pieces(7, 1, 'knight', 'white_player', whiteKnightImg))
+    result.push(new Pieces(7, 2, 'bishop', 'white_player', whiteBishopImg))
+    result.push(new Pieces(7, 3, 'queen', 'white_player', whiteQueenImg))
+    result.push(new Pieces(7, 4, 'king', 'white_player', whiteKingImg))
+    result.push(new Pieces(7, 5, 'bishop', 'white_player', whiteBishopImg))
+    result.push(new Pieces(7, 6, 'knight', 'white_player', whiteKnightImg))
+    result.push(new Pieces(7, 7, 'rook', 'white_player', whiteRookImg))
 
     for (let i = 0; i < BOARD_SIZE; i++) {  
-        result.push(new Pieces(1, i, 'pawn', BLACK_PLAYER, blackPawnImg))
-        result.push(new Pieces(6, i, 'pawn', WHITE_PLAYER, whitePawnImg))
+        result.push(new Pieces(1, i, 'pawn', 'black_player', blackPawnImg))
+        result.push(new Pieces(6, i, 'pawn', 'white_player', whitePawnImg))
     }
   return result;
   }
 
 
 function onCellClick(event, row, col) {
+    for (let i = 0; i < BOARD_SIZE; i++) { // clear all
+        for (let j = 0; j < BOARD_SIZE; j++) {
+          boardEl.rows[i].cells[j].classList.remove('possible-move');
+        }
+    }
+    for (let piece of pieces) {
+        if (piece.row === row && piece.col === col) {
+          let possibleMoves = piece.getPossibleMoves();
+          for (let possibleMove of possibleMoves)
+          boardEl.rows[possibleMove[0]].cells[possibleMove[1]].classList.add('possible-move');
+        }
+      }
+    
     console.log(row, col);
     if (selectedCell !== undefined) {
       selectedCell.classList.remove('selected');
     }
     selectedCell = event.currentTarget;
     selectedCell.classList.add('selected');
+    
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 let blackRookImg = imgEl("https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Chess_rdt45.svg/68px-Chess_rdt45.svg.png");
 let blackKnightImg = imgEl("https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Chess_ndt45.svg/68px-Chess_ndt45.svg.png");
@@ -96,8 +216,7 @@ function imgEl(url) {
     return newEl
 } 
 
+const boardEl = document.createElement("table");
 let selectedCell;
 let pieces = [];
-let BLACK_PLAYER;
-let WHITE_PLAYER;
 const BOARD_SIZE = 8;
