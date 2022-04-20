@@ -31,19 +31,17 @@ window.addEventListener('load', createChessBoard);
 function onCellClick(event, row, col) {
     for (let i = 0; i < BOARD_SIZE; i++) { // clear all
         for (let j = 0; j < BOARD_SIZE; j++) {
-          boardEl.rows[i].cells[j].classList.remove('possible-move');
+            boardEl.rows[i].cells[j].classList.remove('possible-move');
+            boardEl.rows[i].cells[j].classList.remove('selected');
         }
     }
-    const piece = boardData.getPiece(row, col);
-    if (!(piece === undefined)) {
+    const piece = boardData.getPiece(row, col); // get the piece in the cell
+    if (!(piece === undefined)) {              // if the cell is not empty 
         let possibleMoves = piece.getPossibleMoves();
           for (let possibleMove of possibleMoves)
           boardEl.rows[possibleMove[0]].cells[possibleMove[1]].classList.add('possible-move');
     }
     
-    if (selectedCell !== undefined) {
-      selectedCell.classList.remove('selected');
-    }
     selectedCell = event.currentTarget;
     selectedCell.classList.add('selected');
     
@@ -54,14 +52,14 @@ class BoardData {
     constructor(pieces) {
         this.pieces = pieces;
     }
-    getPiece(row, col) {
+    getPiece(row, col) { 
         for (const piece of this.pieces) {
             if (piece.row === row && piece.col === col) {
                 return piece
             }
         }
     }
-
+    
 }
 
 
