@@ -1,24 +1,31 @@
-function createChessBoard() {
-    boardEl.classList.add("chessBoard");
+let selectedCell;
+let boardData;
+
+const BOARD_SIZE = 8;
+const boardEl = document.createElement("table"); 
+
+function createChessBoard() { // Creates the base of the Chess - the board himself.
+    boardEl.classList.add("chessBoard"); 
     document.body.appendChild(boardEl);
     for (let row = 0; row < BOARD_SIZE; row++) {
-        let rowElement = boardEl.insertRow();
+        let rowElement = boardEl.insertRow(); // Runs 8 times and creates 8 rows in the chess board element(table).
         for (let col = 0; col < BOARD_SIZE; col++) {
-            let cellElement = rowElement.insertCell();
-            if ((row + col) % 2 === 0) {
+            let cellElement = rowElement.insertCell(); // Adding 8 cells for each row. 
+            if ((row + col) % 2 === 0) { // Defines wich cell will paint with black and wich will paint with white.
                 cellElement.classList.add("white");
             } else {
                 cellElement.classList.add("black");
             }
-            if (row === 0 || row === 1) {
+            if (row === 0 || row === 1) { // Up side down the enemy pieces.
                 cellElement.classList.add("upSide")
+                // TODO : Replace this block with a function in BoardData class that defines the enemy team and css it with the "upSide"
             }
-            cellElement.addEventListener('click', (event) => onCellClick(event, row, col));
+            cellElement.addEventListener('click', (event) => onCellClick(event, row, col)); // When clicking on a cell -> 
         }
 
     }
     boardData = new BoardData(getInitialPiecies());
-
+    
     for (let piece of boardData.pieces) {
         let cell = boardEl.rows[piece.row].cells[piece.col];
         cell.appendChild(piece.img.cloneNode());
@@ -27,28 +34,28 @@ function createChessBoard() {
 
 window.addEventListener('load', createChessBoard);
 
-
+// When cell clicked - it removes all the previous signs and add new.
 function onCellClick(event, row, col) {
-    for (let i = 0; i < BOARD_SIZE; i++) { // clear all
+    for (let i = 0; i < BOARD_SIZE; i++) { // clear all signs
         for (let j = 0; j < BOARD_SIZE; j++) {
             boardEl.rows[i].cells[j].classList.remove('possible-move');
             boardEl.rows[i].cells[j].classList.remove('selected');
         }
     }
-    const piece = boardData.getPiece(row, col); // get the piece in the cell
-    if (!(piece === undefined)) {              // if the cell is not empty 
+    const piece = boardData.getPiece(row, col); // Get the piece in the cell that clicked
+    if (!(piece === undefined)) {              // If the cell is not empty 
         let possibleMoves = piece.getPossibleMoves();
-          for (let possibleMove of possibleMoves)
-          boardEl.rows[possibleMove[0]].cells[possibleMove[1]].classList.add('possible-move');
+          for (let possibleMove of possibleMoves) // Runs over the list of the possible moves
+          boardEl.rows[possibleMove[0]].cells[possibleMove[1]].classList.add('possible-move'); // Find the cell on our board and paint it.
     }
     
-    selectedCell = event.currentTarget;
+    selectedCell = event.currentTarget; // Save the selected element and paint it.
     selectedCell.classList.add('selected');
     
   }
 
-
-class BoardData {
+// Orginize all the data about the board. For now just the location of specific piece. But in the future for example - it will help me to update the board after a piece was eaten.
+class BoardData { 
     constructor(pieces) {
         this.pieces = pieces;
     }
@@ -62,7 +69,7 @@ class BoardData {
     
 }
 
-
+// Orginize all the data about the pieces - their legal moves, their imgages, types an etc.
 class Pieces {
     constructor(row, col, type, player, img) {
         this.row = row;
@@ -72,7 +79,7 @@ class Pieces {
         this.img = img;
     }
     getPossibleMoves() {
-        let relativeMoves;
+        let relativeMoves; // Save the relative moves that the piece can make by game laws into a list.
         if (this.type === 'rook') {
           relativeMoves = this.getRookRelativeMoves();
         } else if (this.type === 'knight') {
@@ -87,20 +94,20 @@ class Pieces {
             relativeMoves = this.getPawnRelativeMoves();
         }
         let absoluteMoves = [];
-        for (let relativeMove of relativeMoves) {
+        for (let relativeMove of relativeMoves) { // The moves from the current positions of the piece
           const absoluteRow = this.row + relativeMove[0];
           const absoluteCol = this.col + relativeMove[1];
           absoluteMoves.push([absoluteRow, absoluteCol]);
         }
-        let filteredMoves = [];
-        for (let absoluteMove of absoluteMoves) {
+        let filteredMoves = []; 
+        for (let absoluteMove of absoluteMoves) { // Filters the moves that are out of the board borders.
           const absoluteRow = absoluteMove[0];
           const absoluteCol = absoluteMove[1];
           if (absoluteRow >= 0 && absoluteRow <= 7 && absoluteCol >= 0 && absoluteCol <= 7) {
-            filteredMoves.push(absoluteMove);
+            filteredMoves.push(absoluteMove); 
           }
         }
-        return filteredMoves;
+        return filteredMoves; // The final list of cells that the piece can go to.
     }
     getRookRelativeMoves() {
         let result = [];
@@ -163,7 +170,7 @@ class Pieces {
 
 
 }
-function getInitialPiecies() {
+function getInitialPiecies() { // Return a list of all pieces, thier first locations, their color and images elements.
     let result = [];
     result.push(new Pieces(0, 0, 'rook', 'black_player', blackRookImg))
     result.push(new Pieces(0, 1, 'knight', 'black_player', blackKnightImg))
@@ -190,6 +197,7 @@ function getInitialPiecies() {
   return result;
   }
 
+// Images elements:
 let blackRookImg = imgEl("https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Chess_rdt45.svg/68px-Chess_rdt45.svg.png");
 let blackKnightImg = imgEl("https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Chess_ndt45.svg/68px-Chess_ndt45.svg.png");
 let blackBishopImg = imgEl("https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Chess_bdt45.svg/68px-Chess_bdt45.svg.png");
@@ -203,14 +211,10 @@ let whiteQueenImg = imgEl("https://upload.wikimedia.org/wikipedia/commons/thumb/
 let whiteKingImg = imgEl("https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Chess_klt45.svg/68px-Chess_klt45.svg.png");
 let whitePawnImg = imgEl("https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Chess_plt45.svg/68px-Chess_plt45.svg.png");
 
-function imgEl(url) {
+function imgEl(url) { // Make the imgage's URL into an HTML element.
     let newEl = document.createElement("img");
     newEl.src = url;
     return newEl
 } 
 
-const boardEl = document.createElement("table");
-let selectedCell;
-let boardData;
-// let pieces = [];
-const BOARD_SIZE = 8;
+
