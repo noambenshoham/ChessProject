@@ -44,11 +44,13 @@ window.addEventListener('load', createChessBoard);
 
 function onCellClick(row, col) {
     selectedCell = boardEl.rows[row].cells[col];
-
+    console.log("1")
     if (!(selectedPiece === undefined)) { // If choosed, cant do anything until tryMove return something
-        if (boardData.tryMove(selectedPiece, row, col, selectedCell)) {
+
+        if (boardData.tryMove(selectedPiece, row, col)) {
             boardData.clearBoard(boardEl);
             selectedPiece = undefined;
+            console.log('2')
         }
     } else { // First position of the board
         boardData.clearBoard(boardEl);
@@ -81,10 +83,14 @@ class BoardData {
             possibleCell.classList.add('possible-move');
         }
     }
-    tryMove(piece, row, col, selectedCell) {
+    tryMove(piece, row, col) {
         // Refactor to: moves.includes([row, col])
         // If the cell([row, col]) is in the possibleMoves list ([[2,1], [1,0]])
         if (piece.getPossibleMoves().some(element => element.toString() === [row, col].toString())) {
+            if (this.removePiece(row, col) === undefined) {
+                selectedCell.innerHTML = '' // Remove img. TODO : Refactor to .removeChild
+            }
+            selectedCell = boardEl.rows[row].cells[col];
             piece.row = row;
             piece.col = col;
             selectedCell.appendChild(piece.img);
@@ -92,6 +98,16 @@ class BoardData {
         }
         return false;
     }
+    removePiece(row, col) {
+        for (let i = 0; i < this.pieces.length; i++) {
+            const piece = this.pieces[i];
+            if (piece.row === row && piece.col === col) {
+                // Remove piece at index i
+                this.pieces.splice(i, 1);
+            }
+        }
+    }
+
     getPiece(row, col) {
         for (const piece of this.pieces) {
             if (piece.row === row && piece.col === col) {
