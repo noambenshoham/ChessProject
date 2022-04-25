@@ -16,6 +16,7 @@ let imgURLsObj =
 }
 let selectedCell;
 let boardData;
+let selectedPiece;
 
 const BOARD_SIZE = 8;
 const boardEl = document.createElement("table");
@@ -32,7 +33,7 @@ function createChessBoard() {
             } else {
                 cellElement.classList.add("black");
             }
-            cellElement.addEventListener('click', (event) => onCellClick(event, row, col));
+            cellElement.addEventListener('click', () => onCellClick(row, col));
         }
 
     }
@@ -41,23 +42,23 @@ function createChessBoard() {
 
 window.addEventListener('load', createChessBoard);
 
-function onCellClick(event, row, col) {
-    for (let i = 0; i < BOARD_SIZE; i++) { // clear all signs
-        for (let j = 0; j < BOARD_SIZE; j++) {
-            boardEl.rows[i].cells[j].classList.remove('possible-move');
-            boardEl.rows[i].cells[j].classList.remove('selected');
+function onCellClick(row, col) {
+    selectedCell = boardEl.rows[row].cells[col];
+
+    if (!(selectedPiece === undefined)) { // If choosed, cant do anything until tryMove return something
+        if (boardData.tryMove(selectedPiece, row, col, selectedCell)) {
+            boardData.clearBoard(boardEl);
+            selectedPiece = undefined;
         }
+    } else { // First position of the board
+        boardData.clearBoard(boardEl);
+        const piece = boardData.getPiece(row, col);
+        if (!(piece === undefined)) {
+            boardData.paintPossibleMoves(piece)
+        }
+        selectedCell.classList.add('selected');
+        selectedPiece = piece;
     }
-    const piece = boardData.getPiece(row, col);
-    if (!(piece === undefined)) {
-        let possibleMoves = piece.getPossibleMoves();
-        for (let possibleMove of possibleMoves)
-            boardEl.rows[possibleMove[0]].cells[possibleMove[1]].classList.add('possible-move');
-
-    }
-
-    selectedCell = event.currentTarget; // Save the selected element and paint it.
-    selectedCell.classList.add('selected');
 
 }
 
@@ -65,7 +66,32 @@ class BoardData {
     constructor() {
         this.pieces = this.getInitialPiecies();
     }
-
+    clearBoard(boardEl) {
+        for (let i = 0; i < BOARD_SIZE; i++) { // clear all signs
+            for (let j = 0; j < BOARD_SIZE; j++) {
+                boardEl.rows[i].cells[j].classList.remove('possible-move');
+                boardEl.rows[i].cells[j].classList.remove('selected');
+            }
+        }
+    }
+    paintPossibleMoves(piece) {
+        let possibleMoves = piece.getPossibleMoves();
+        for (let possibleMove of possibleMoves) {
+            let possibleCell = boardEl.rows[possibleMove[0]].cells[possibleMove[1]];
+            possibleCell.classList.add('possible-move');
+        }
+    }
+    tryMove(piece, row, col, selectedCell) {
+        // Refactor to: moves.includes([row, col])
+        // If the cell([row, col]) is in the possibleMoves list ([[2,1], [1,0]])
+        if (piece.getPossibleMoves().some(element => element.toString() === [row, col].toString())) {
+            piece.row = row;
+            piece.col = col;
+            selectedCell.appendChild(piece.img);
+            return true;
+        }
+        return false;
+    }
     getPiece(row, col) {
         for (const piece of this.pieces) {
             if (piece.row === row && piece.col === col) {
@@ -110,6 +136,7 @@ class Pieces {
         this.type = type;
         this.player = player;
         this.img = this.imgToElement(imgUrl);
+        // this.moves = this.getPossibleMoves();
     }
 
     imgToElement(url) {// Make the imgage's URL into an HTML element.
@@ -159,27 +186,27 @@ class Pieces {
                     result.push([row, col]);
                 } else if (this.player !== boardData.getPiece(row, col).player) {
                     result.push([row, col]);
-                    console.log("opponent");
+                    // console.log("opponent");
                     return result;
                 } else if (this.player === boardData.getPiece(row, col).player) {
-                    console.log("player");
+                    // console.log("player");
                     return result;
                 }
             }
-            console.log("all empty");
+            // console.log("all empty");
             return result;
         } else {
             let row = this.row + directionRow;
             let col = this.col + directionCol;
             if (boardData.getPiece(row, col) === undefined) {
                 result.push([row, col]);
-                console.log('empty cell')
+                // console.log('empty cell')
             } else if (this.player !== boardData.getPiece(row, col).player) {
                 result.push([row, col]);
-                console.log("opponent");
+                // console.log("opponent");
                 return result;
             } else if (this.player === boardData.getPiece(row, col).player) {
-                console.log("player");
+                // console.log("player");
                 return result;
             }
             return result;
