@@ -6,6 +6,7 @@ class Pieces {
         this.type = type;
         this.player = player;
         this.img = this.imgToElement(imgUrl);
+
         // this.moves = this.getPossibleMoves();
     }
 
@@ -144,21 +145,28 @@ class Pieces {
             direction = -1;
         }
 
-        let position = [this.row + direction, this.col];
-        if (boardData.getPiece(position[0], position[1]) === undefined) {
-            result.push(position);
-        }
-        position = [this.row + direction, this.col + direction];
-        if (boardData.getPiece(position[0], position[1]) !== undefined) {
-            if (boardData.getPiece(position[0], position[1]).player !== this.player) {
-                result.push(position);
+        let oneStep = [this.row + direction, this.col];
+        let twoSteps = [this.row + direction * 2, this.col];
+
+        if (this.row === 1 || this.row === 6) {
+            if (boardData.getPiece(oneStep[0], oneStep[1]) === undefined &&
+                boardData.getPiece(twoSteps[0], twoSteps[1]) === undefined) {
+                result.push(twoSteps)
             }
         }
-        position = [this.row + direction, this.col - direction];
-        if (boardData.getPiece(position[0], position[1]) !== undefined) {
-            if (boardData.getPiece(position[0], position[1]).player !== this.player) {
-                console.log(boardData.getPiece(position[0], position[1]))
-                result.push(position);
+        if (boardData.getPiece(oneStep[0], oneStep[1]) === undefined) {
+            result.push(oneStep);
+        }
+        let eatPiece = [this.row + direction, this.col + direction];
+        if (boardData.getPiece(eatPiece[0], eatPiece[1]) !== undefined) {
+            if (boardData.getPiece(eatPiece[0], eatPiece[1]).player !== this.player) {
+                result.push(eatPiece);
+            }
+        }
+        eatPiece = [this.row + direction, this.col - direction];
+        if (boardData.getPiece(eatPiece[0], eatPiece[1]) !== undefined) {
+            if (boardData.getPiece(eatPiece[0], eatPiece[1]).player !== this.player) {
+                result.push(eatPiece);
             }
         }
         return result;

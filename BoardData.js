@@ -40,6 +40,7 @@ class BoardData {
         }
         return false;
     }
+
     removePiece(row, col) {
         for (let i = 0; i < this.pieces.length; i++) {
             const piece = this.pieces[i];

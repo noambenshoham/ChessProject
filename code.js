@@ -44,8 +44,8 @@ window.addEventListener('load', createChessBoard);
 
 function onCellClick(row, col) {
     selectedCell = boardEl.rows[row].cells[col];
-    if (!(selectedPiece === undefined) && boardData.tryMove(selectedPiece, row, col)) {
-        boardData.clearBoard(boardEl);
+    if (selectedPiece !== undefined && boardData.tryMove(selectedPiece, row, col)) {
+        boardData.clearBoard(boardEl); 
         selectedPiece = undefined;
 
     } else { // First position of the board
@@ -57,5 +57,4 @@ function onCellClick(row, col) {
         selectedCell.classList.add('selected');
         selectedPiece = piece;
     }
-
-}
+} 
