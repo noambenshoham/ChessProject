@@ -1,6 +1,7 @@
 class BoardData {
-    constructor() {
+    constructor(firstPlayer) {
         this.pieces = this.getInitialPiecies();
+        this.currentPlayer = firstPlayer;
     }
     clearBoard(boardEl) {
         for (let i = 0; i < BOARD_SIZE; i++) { // clear all signs
@@ -28,6 +29,13 @@ class BoardData {
             piece.row = row;
             piece.col = col;
             selectedCell.appendChild(piece.img);
+            // console.log(this.currentPlayer)
+            if (this.currentPlayer === 'white_player') {
+                this.currentPlayer = 'black_player';
+            } else {
+                this.currentPlayer = 'white_player';
+            }
+            console.log(this.currentPlayer)
             return true;
         }
         return false;

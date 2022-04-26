@@ -37,7 +37,7 @@ function createChessBoard() {
         }
 
     }
-    boardData = new BoardData();
+    boardData = new BoardData('white_player');
 }
 
 window.addEventListener('load', createChessBoard);

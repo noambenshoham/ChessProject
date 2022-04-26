@@ -21,6 +21,9 @@ class Pieces {
     }
 
     getPossibleMoves() {
+        if (boardData.currentPlayer !== this.player) {
+            return []
+        }
         let moves;
 
         let findMovesFunc = {
