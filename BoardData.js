@@ -2,9 +2,11 @@ class BoardData {
     constructor(firstPlayer) {
         this.pieces = this.getInitialPiecies();
         this.currentPlayer = firstPlayer;
+        this.winner = undefined;
     }
+
     clearBoard(boardEl) {
-        for (let i = 0; i < BOARD_SIZE; i++) { // clear all signs
+        for (let i = 0; i < BOARD_SIZE; i++) {
             for (let j = 0; j < BOARD_SIZE; j++) {
                 boardEl.rows[i].cells[j].classList.remove('possible-move');
                 boardEl.rows[i].cells[j].classList.remove('selected');
@@ -19,23 +21,25 @@ class BoardData {
         }
     }
     tryMove(piece, row, col) {
-        // Refactor to: moves.includes([row, col])
-        // If the cell([row, col]) is in the possibleMoves list ([[2,1], [1,0]])
+        selectedCell = boardEl.rows[row].cells[col];
+        // If the cell - [row, col] - is in the possibleMoves list [[2,1], [1,0]]
         if (piece.getPossibleMoves().some(element => element.toString() === [row, col].toString())) {
-            if (this.removePiece(row, col) === undefined) {
-                selectedCell.innerHTML = '' // Remove img. TODO : Refactor to .removeChild
-            }
-            selectedCell = boardEl.rows[row].cells[col];
+            let removedPiece = this.removePiece(row, col);
+            selectedCell.innerHTML = ''
+            // ^ Remove img if there is a piece. Better than removeChild for case of empty cells.
+
             piece.row = row;
             piece.col = col;
             selectedCell.appendChild(piece.img);
-            // console.log(this.currentPlayer)
+            if (removedPiece && removedPiece.type === 'king') {
+                this.winner = this.currentPlayer;
+                alert('The winner is:' + this.currentPlayer)
+            }
             if (this.currentPlayer === 'white_player') {
                 this.currentPlayer = 'black_player';
             } else {
                 this.currentPlayer = 'white_player';
             }
-            console.log(this.currentPlayer)
             return true;
         }
         return false;
@@ -45,8 +49,8 @@ class BoardData {
         for (let i = 0; i < this.pieces.length; i++) {
             const piece = this.pieces[i];
             if (piece.row === row && piece.col === col) {
-                // Remove piece at index i
                 this.pieces.splice(i, 1);
+                return piece;
             }
         }
     }

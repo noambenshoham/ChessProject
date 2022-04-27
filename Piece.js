@@ -22,7 +22,7 @@ class Pieces {
     }
 
     getPossibleMoves() {
-        if (boardData.currentPlayer !== this.player) {
+        if (boardData.currentPlayer !== this.player || boardData.winner !== undefined) {
             return []
         }
         let moves;
@@ -46,6 +46,8 @@ class Pieces {
                 filteredMoves.push(move);
             }
         }
+        // TODO : if there is check - return only moves that will return false to ifCheck
+
         return filteredMoves;
     }
 
@@ -139,6 +141,7 @@ class Pieces {
         return result;
     }
     getPawnMoves() {
+
         let result = [];
         let direction = 1;
         if (this.player === 'white_player') {
