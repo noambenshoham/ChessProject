@@ -47,7 +47,9 @@ class Pieces {
             }
         }
         // TODO : if there is check - return only moves that will return false to ifCheck
-
+        if (boardData.checkBy && boardData.checkBy !== boardData.currentPlayer) {
+            console.log('צמצם(:')
+        }
         return filteredMoves;
     }
 

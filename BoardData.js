@@ -3,8 +3,28 @@ class BoardData {
         this.pieces = this.getInitialPiecies();
         this.currentPlayer = firstPlayer;
         this.winner = undefined;
+        this.checkBy = undefined;
     }
-
+    isCheck() {
+        let allPossibleMoves = []
+        let kingPosition = this.findKing();
+        for (const piece of this.pieces) {
+            allPossibleMoves.push(piece.getPossibleMoves())
+        }
+        for (let onePieceMoves of allPossibleMoves) {
+            for (let oneMove of onePieceMoves) {
+                if (oneMove[0] === kingPosition[0] && oneMove[1] === kingPosition[1]) {
+                    return true;
+                }
+            }
+        }
+    }
+    findKing() {
+        for (const piece of this.pieces) {
+            if (piece.type === 'king' && piece.player !== boardData.currentPlayer)
+                return [piece.row, piece.col]
+        }
+    }
     clearBoard(boardEl) {
         for (let i = 0; i < BOARD_SIZE; i++) {
             for (let j = 0; j < BOARD_SIZE; j++) {
@@ -13,6 +33,7 @@ class BoardData {
             }
         }
     }
+
     paintPossibleMoves(piece) {
         let possibleMoves = piece.getPossibleMoves();
         for (let possibleMove of possibleMoves) {
@@ -31,10 +52,12 @@ class BoardData {
             piece.row = row;
             piece.col = col;
             selectedCell.appendChild(piece.img);
-            if (removedPiece && removedPiece.type === 'king') {
-                this.winner = this.currentPlayer;
-                alert('The winner is:' + this.currentPlayer)
-            }
+            // if (removedPiece && removedPiece.type === 'king') {
+            //     this.winner = this.currentPlayer;
+            //     alert('The winner is:' + this.currentPlayer)
+            // }
+            if (this.isCheck()) this.checkBy = this.currentPlayer
+
             if (this.currentPlayer === 'white_player') {
                 this.currentPlayer = 'black_player';
             } else {
@@ -44,7 +67,6 @@ class BoardData {
         }
         return false;
     }
-
     removePiece(row, col) {
         for (let i = 0; i < this.pieces.length; i++) {
             const piece = this.pieces[i];
@@ -82,10 +104,10 @@ class BoardData {
         result.push(new Pieces(7, 6, 'knight', 'white_player', imgURLsObj.whiteKnightImg))
         result.push(new Pieces(7, 7, 'rook', 'white_player', imgURLsObj.whiteRookImg))
 
-        for (let i = 0; i < BOARD_SIZE; i++) {
-            result.push(new Pieces(1, i, 'pawn', 'black_player', imgURLsObj.blackPawnImg))
-            result.push(new Pieces(6, i, 'pawn', 'white_player', imgURLsObj.whitePawnImg))
-        }
+        // for (let i = 0; i < BOARD_SIZE; i++) {
+        //     result.push(new Pieces(1, i, 'pawn', 'black_player', imgURLsObj.blackPawnImg))
+        //     result.push(new Pieces(6, i, 'pawn', 'white_player', imgURLsObj.whitePawnImg))
+        // }
         return result;
     }
 
