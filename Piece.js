@@ -6,6 +6,7 @@ class Pieces {
         this.type = type;
         this.player = player;
         this.img = this.imgToElement(imgUrl);
+        
 
         // this.moves = this.getPossibleMoves();
     }
@@ -48,8 +49,18 @@ class Pieces {
         }
         // TODO : if there is check - return only moves that will return false to ifCheck
         if (boardData.checkBy && boardData.checkBy !== boardData.currentPlayer) {
-            console.log('צמצם(:')
+            let checkMoves = []
+            //     console.log('צמצם')
+            for (let move of filteredMoves) {
+                if (boardData.imagineMove(move, boardData.getPiece(this.row, this.col))) {
+                    console.log(move)
+                    checkMoves.push(move)
+
+                }
+            }
+            return checkMoves
         }
+        // console.log(boardData.getPiece(this.row, this.col))
         return filteredMoves;
     }
 

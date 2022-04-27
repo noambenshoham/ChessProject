@@ -25,6 +25,19 @@ class BoardData {
                 return [piece.row, piece.col]
         }
     }
+    imagineMove(move, piece) { // [1, 2]
+        let previousRow = piece.row;
+        let previousCol = piece.col;
+        piece.row = move[0];
+        piece.col = move[1];
+        console.log(this.isCheck())
+        if (this.isCheck()) {
+            return true
+        }
+        piece.row = previousRow;
+        piece.col = previousCol;
+
+    }
     clearBoard(boardEl) {
         for (let i = 0; i < BOARD_SIZE; i++) {
             for (let j = 0; j < BOARD_SIZE; j++) {
@@ -33,7 +46,6 @@ class BoardData {
             }
         }
     }
-
     paintPossibleMoves(piece) {
         let possibleMoves = piece.getPossibleMoves();
         for (let possibleMove of possibleMoves) {
@@ -44,26 +56,32 @@ class BoardData {
     tryMove(piece, row, col) {
         selectedCell = boardEl.rows[row].cells[col];
         // If the cell - [row, col] - is in the possibleMoves list [[2,1], [1,0]]
-        if (piece.getPossibleMoves().some(element => element.toString() === [row, col].toString())) {
-            let removedPiece = this.removePiece(row, col);
-            selectedCell.innerHTML = ''
-            // ^ Remove img if there is a piece. Better than removeChild for case of empty cells.
+        let pieceMoves = piece.getPossibleMoves();
+        // if (this.checkBy !== this.currentPlayer) {
+        //     pieceMoves = this.filterMoves(pieceMoves);
+        // }
+        for (const move of pieceMoves) {
+            if (move[0] === row && move[1] === col) {
+                let removedPiece = this.removePiece(row, col);
+                selectedCell.innerHTML = ''
+                // ^ Remove img if there is a piece. Better than removeChild for case of empty cells.
 
-            piece.row = row;
-            piece.col = col;
-            selectedCell.appendChild(piece.img);
-            // if (removedPiece && removedPiece.type === 'king') {
-            //     this.winner = this.currentPlayer;
-            //     alert('The winner is:' + this.currentPlayer)
-            // }
-            if (this.isCheck()) this.checkBy = this.currentPlayer
+                piece.row = row;
+                piece.col = col;
+                selectedCell.appendChild(piece.img);
+                // if (removedPiece && removedPiece.type === 'king') {
+                //     this.winner = this.currentPlayer;
+                //     alert('The winner is:' + this.currentPlayer)
+                // }
+                if (this.isCheck()) this.checkBy = this.currentPlayer
 
-            if (this.currentPlayer === 'white_player') {
-                this.currentPlayer = 'black_player';
-            } else {
-                this.currentPlayer = 'white_player';
+                if (this.currentPlayer === 'white_player') {
+                    this.currentPlayer = 'black_player';
+                } else {
+                    this.currentPlayer = 'white_player';
+                }
+                return true;
             }
-            return true;
         }
         return false;
     }
