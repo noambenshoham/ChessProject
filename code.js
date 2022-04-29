@@ -1,4 +1,3 @@
-
 let imgURLsObj =
 {
     blackRookImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Chess_rdt45.svg/68px-Chess_rdt45.svg.png",
@@ -35,7 +34,6 @@ function createChessBoard() {
             }
             cellElement.addEventListener('click', () => onCellClick(row, col));
         }
-
     }
     boardData = new BoardData('white_player');
 }
@@ -44,12 +42,11 @@ window.addEventListener('load', createChessBoard);
 
 function onCellClick(row, col) {
     selectedCell = boardEl.rows[row].cells[col];
-    // TODO : run over the possible moves and check if check.
     if (selectedPiece !== undefined && boardData.tryMove(selectedPiece, row, col)) {
         boardData.clearBoard(boardEl);
         selectedPiece = undefined;
 
-    } else { // First position of the board
+    } else { // First click will always start in the else block.
         boardData.clearBoard(boardEl);
         const piece = boardData.getPiece(row, col);
         if (!(piece === undefined)) {

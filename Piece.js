@@ -6,9 +6,6 @@ class Pieces {
         this.type = type;
         this.player = player;
         this.img = this.imgToElement(imgUrl);
-        
-
-        // this.moves = this.getPossibleMoves();
     }
 
     imgToElement(url) {// Make the imgage's URL into an HTML element.
@@ -21,7 +18,7 @@ class Pieces {
         }
         return newEl;
     }
-
+    // Example of return : [[1,2], [5,6]]
     getPossibleMoves() {
         if (boardData.currentPlayer !== this.player || boardData.winner !== undefined) {
             return []
@@ -47,26 +44,11 @@ class Pieces {
                 filteredMoves.push(move);
             }
         }
-        // TODO : if there is check - return only moves that will return false to ifCheck
-        if (boardData.checkBy && boardData.checkBy !== boardData.currentPlayer) {
-            let checkMoves = []
-            //     console.log('צמצם')
-            for (let move of filteredMoves) {
-                if (boardData.imagineMove(move, boardData.getPiece(this.row, this.col))) {
-                    console.log(move)
-                    checkMoves.push(move)
-
-                }
-            }
-            return checkMoves
-        }
-        // console.log(boardData.getPiece(this.row, this.col))
         return filteredMoves;
     }
 
     getMovesInDirection(directionRow, directionCol, boardData) {
         let result = [];
-        // for loop only for BISHOP, QUEEN, ROOK. They running
         if (this.type === 'bishop' || this.type === 'rook' || this.type === 'queen') {
             for (let i = 1; i < BOARD_SIZE; i++) {
                 let row = this.row + directionRow * i;
@@ -75,27 +57,21 @@ class Pieces {
                     result.push([row, col]);
                 } else if (this.player !== boardData.getPiece(row, col).player) {
                     result.push([row, col]);
-                    // console.log("opponent");
                     return result;
                 } else if (this.player === boardData.getPiece(row, col).player) {
-                    // console.log("player");
                     return result;
                 }
             }
-            // console.log("all empty");
             return result;
         } else {
             let row = this.row + directionRow;
             let col = this.col + directionCol;
             if (boardData.getPiece(row, col) === undefined) {
                 result.push([row, col]);
-                // console.log('empty cell')
             } else if (this.player !== boardData.getPiece(row, col).player) {
                 result.push([row, col]);
-                // console.log("opponent");
                 return result;
             } else if (this.player === boardData.getPiece(row, col).player) {
-                // console.log("player");
                 return result;
             }
             return result;
